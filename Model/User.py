@@ -8,7 +8,8 @@ class User(IRepository):
         self._password = password
         self._nickname = nickname
 
-    
+    '''геттеры '''
+
     @property
     def login(self):
         return self._login
@@ -20,6 +21,8 @@ class User(IRepository):
     @property
     def nickname(self):
         return self._nickname
+
+    '''сеттеры'''
 
     @login.setter
     def login(self, login):
@@ -44,12 +47,3 @@ if (__name__ == '__main__'):
     print('{} {} {} {}'.format(user.id, user.login, user.password, user.nickname))
 
 
-
-    
-
-user = User(2,'x', 'y', 'z')
-
-user.id = 4
-id = user.id
-
-print(id)
