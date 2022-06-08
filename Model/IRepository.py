@@ -11,8 +11,12 @@ class IRepository:
     
     @id.setter
     def id(self, x):
-        
-        if (x < 0):
-            return
 
         self._id = x
+
+
+if __name__ == "__main__":
+    rep = IRepository(3)
+
+    print(rep.id)
+    print(rep.id)
