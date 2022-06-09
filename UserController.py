@@ -1,8 +1,3 @@
-
-from http.client import NOT_FOUND
-from platform import release
-
-from matplotlib.pyplot import connect
 import pymysql
 from connectionDB import create_connect
 from User import User
@@ -59,8 +54,6 @@ def delete(user_id):
     except:
         print('error')
 
-    
-
 def update(user):
     try:
         con = create_connect()
@@ -93,10 +86,8 @@ def update(user):
                     return
 
                 updateUserCommand = 'UPDATE USERS SET LOGIN = %s, PASSWORD = %s, NICKNAME = %s WHERE user_id = %s'
-                print(updateUserCommand)
                 cur.execute(updateUserCommand,(login, password, nickname, user_id))
                 con.commit()
-                print('yes')
                 return user  
 
 
@@ -105,8 +96,6 @@ def update(user):
     
     except:
         print('error')
-
-
 
 def getAll():
 
@@ -146,7 +135,6 @@ def getAll():
     except:
         print('error')
     
-
 def getById(user_id):
     
 
@@ -183,12 +171,49 @@ def getById(user_id):
         print('error')
 
 
+def getByLogin(login):
+    
+
+    try:
+        con = create_connect()
+        try:
+
+            with con.cursor() as cur:
+              
+                getUserByLoginCommand = 'SELECT * FROM USERS WHERE login = %s;'
+                cur.execute(getUserByLoginCommand, login)
+                
+                row = cur.fetchone()
+                
+                if (row == None):
+                        return
+
+                print(row)
+
+                user_id = row['user_id']
+                login = row['login']
+                password = row['password']
+                nickname = row['nickname']
+
+                user = User(user_id, login, password, nickname)
+
+                return user
+
+
+        finally:
+            con.close()
+    
+    except:
+        print('error')
+
+
 if __name__ == '__main__':
 
-    user = getById(2189)
+    user = getByLogin('login1')
 
-    user.nickname = 'newNickname'
+    # user.nickname = 'newNickname'
 
-    update(user)
+    print(user.login)
+    # update(user)
 
    
