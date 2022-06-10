@@ -121,7 +121,10 @@ def getAll():
                 if (rows == None):
                         return
 
-                gameList = []    
+                # print(rows)
+
+                gameList = []
+                tags = []    
                 for row in rows:
                     product_id = row['product_id']
                     name = row['name']
@@ -130,11 +133,16 @@ def getAll():
                     developer_id = row['developer_id']
                     publisher_id = row['publisher_id']
                     release_date = row['release_date']
+                    tag = row['tag_name']
+
+                    if (tag == None):
+                        tag = ''
+
                     
                     game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
                     gameList.append(game)
-
-                return gameList
+                    tags.append(tag)
+                return gameList, tags
 
 
         finally:
@@ -168,10 +176,11 @@ def getById(game_id):
                 developer_id = row['developer_id']
                 publisher_id = row['publisher_id']
                 release_date = row['release_date']
-                
+                tag = row['tag_name']
+
                 game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
 
-                return game 
+                return game, tag
 
 
         finally:
@@ -205,10 +214,10 @@ def getByName(name):
                 developer_id = row['developer_id']
                 publisher_id = row['publisher_id']
                 release_date = row['release_date']
-                
+                tag = row['tag_name']
                 game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
 
-                return game 
+                return game, tag 
 
 
         finally:
@@ -218,14 +227,13 @@ def getByName(name):
         print('error')
 
 
+
 if __name__ == '__main__':
 
     # game = getByName('Skyrim')
     # print(game.name)
     # print(game.release_date)
-    game = Game(id = 172)
-
-    add(game)
+    getAll()
 
     # update(game)
     

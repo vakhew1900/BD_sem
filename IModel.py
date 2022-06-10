@@ -1,5 +1,5 @@
 
-class IRepository:
+class IModel:
 
     def __init__(self, id = 1):
         self._id = id
@@ -16,7 +16,7 @@ class IRepository:
 
 
 if __name__ == "__main__":
-    rep = IRepository(3)
+    rep = IModel(3)
 
     print(rep.id)
     print(rep.id)

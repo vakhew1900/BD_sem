@@ -1,8 +1,8 @@
 from datetime import datetime
-from IRepository import IRepository
+from IModel import IModel
 import datetime
 
-class Product(IRepository):
+class Product(IModel):
     
     def __init__(self, id=1, name = 'name', release_date = datetime.date(2015, 5, 5), price = 1299, description = 'Description'):
         super().__init__(id)

@@ -1,7 +1,7 @@
 from matplotlib.pyplot import cla
-from IRepository import IRepository
+from IModel import IModel
 
-class User(IRepository):
+class User(IModel):
     def __init__(self, id = 1,  login = 'login', password = 'password',  nickname = 'nickname'):
         super().__init__(id)
         self._login = login
