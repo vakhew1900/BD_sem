@@ -22,7 +22,7 @@ def getEstimation(product_id):
                 print(row)
 
                 estimation = None
-                if (row != None):
+                if (row['estimation'] != None):
                      estimation = float(row['estimation'])
 
                      
@@ -32,7 +32,7 @@ def getEstimation(product_id):
             con.close()
     
     except:
-        print('error')
+        print('error 1')
 
 
 if __name__ == '__main__':

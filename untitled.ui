@@ -528,42 +528,42 @@
     <property name="title">
      <string>Пользователь</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
+    <addaction name="regiseterAction"/>
+    <addaction name="enterAction"/>
+    <addaction name="deleteAction"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>Режим администратора</string>
     </property>
-    <addaction name="action_4"/>
-    <addaction name="action_5"/>
+    <addaction name="turnOffAction"/>
+    <addaction name="turnOnAction"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="regiseterAction">
    <property name="text">
     <string>Зарегистироваться</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="enterAction">
    <property name="text">
     <string>Войти</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="deleteAction">
    <property name="text">
     <string>Удалить пользователя</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="turnOffAction">
    <property name="text">
     <string>Выключено</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="turnOnAction">
    <property name="text">
     <string>Включено</string>
    </property>

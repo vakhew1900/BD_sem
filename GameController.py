@@ -28,6 +28,10 @@ def add(newGame):
                 cur.execute(insertGameCommand, (game_id, developer_id, publisher_id))
                 con.commit()
 
+                newGame.id = game_id
+
+                return newGame
+
         finally:
             con.close()
     
@@ -197,31 +201,120 @@ def getByName(name):
 
             with con.cursor() as cur:
               
-                getGameByIdCommand = 'SELECT * FROM fullInfoAboutGame WHERE name = %s;'
-                cur.execute( getGameByIdCommand, name)
+                getGameByNameCommand = 'SELECT * FROM fullInfoAboutGame WHERE name like concat(\'%%\', %s ,\'%%\');'
+                cur.execute( getGameByNameCommand, name)
                 
-                row = cur.fetchone()
+                rows = cur.fetchall()
                 
-                if (row == None):
-                        return
+                if (rows == None):
+                        return None
 
-                print(row)
+                games = []
+                tags = []
+                for row in rows:
+                    product_id = row['product_id']
+                    name = row['name']
+                    price = row['price']
+                    description = row['description']
+                    developer_id = row['developer_id']
+                    publisher_id = row['publisher_id']
+                    release_date = row['release_date']
+                    tag = row['tag_name']
+                    game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
+                    
+                    games.append(game)
+                    tags.append(tag)
 
-                product_id = row['product_id']
-                name = row['name']
-                price = row['price']
-                description = row['description']
-                developer_id = row['developer_id']
-                publisher_id = row['publisher_id']
-                release_date = row['release_date']
-                tag = row['tag_name']
-                game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
-
-                return game, tag 
+                return games, tags
 
 
         finally:
             con.close()
+            
+    
+    except:
+        print('error')
+
+
+def getByPublisher(publisher_id):
+    try:
+        con = create_connect()
+        try:
+
+            with con.cursor() as cur:
+              
+                getGameByPublisherCommand = 'SELECT * FROM fullInfoAboutGame WHERE publisher_id = %s;'
+                cur.execute( getGameByPublisherCommand , publisher_id)
+                
+                rows = cur.fetchall()
+                
+                if (rows == None):
+                        return None
+
+                games = []
+                tags = []
+                for row in rows:
+                    product_id = row['product_id']
+                    name = row['name']
+                    price = row['price']
+                    description = row['description']
+                    developer_id = row['developer_id']
+                    publisher_id = row['publisher_id']
+                    release_date = row['release_date']
+                    tag = row['tag_name']
+                    game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
+                    
+                    games.append(game)
+                    tags.append(tag)
+
+                return games, tags
+
+
+        finally:
+            con.close()
+            
+    
+    except:
+        print('error')
+
+
+def getByDeveloper(developer_id):
+    try:
+        con = create_connect()
+        try:
+
+            with con.cursor() as cur:
+              
+                getGameByPublisherCommand = 'SELECT * FROM fullInfoAboutGame WHERE developer_id = %s;'
+                cur.execute( getGameByPublisherCommand , developer_id)
+                
+                rows = cur.fetchall()
+                
+                if (rows == None):
+                        return None
+
+                games = []
+                tags = []
+                for row in rows:
+                    product_id = row['product_id']
+                    name = row['name']
+                    price = row['price']
+                    description = row['description']
+                    developer_id = row['developer_id']
+                    publisher_id = row['publisher_id']
+                    release_date = row['release_date']
+                    tag = row['tag_name']
+                    game = Game(id=product_id, name=name, release_date= release_date, price=price, description= description, developer_id=developer_id, publisher_id=publisher_id)
+                    
+                    games.append(game)
+                    tags.append(tag)
+
+                return games, tags
+
+
+        finally:
+            con.close()
+            
     
     except:
         print('error')
@@ -233,8 +326,7 @@ if __name__ == '__main__':
     # game = getByName('Skyrim')
     # print(game.name)
     # print(game.release_date)
-    getAll()
-
+    getByName('Witcher')
     # update(game)
     
     # delete(171)
