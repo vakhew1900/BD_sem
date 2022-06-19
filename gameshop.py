@@ -1,5 +1,11 @@
+from email import message
+from email.mime import application
+from re import X
+from tkinter import dialog
 from PyQt5 import QtWidgets, QtCore
+from numpy import diag
 from Game import Game
+from User import User
 from mainwindow import Ui_MainWindow  
 from PyQt5.QtGui import QPixmap, QIcon
 import sys
@@ -7,6 +13,10 @@ import GameController
 import additionController
 import datetime
 import functionalController
+import enterDialog
+import registerDialog
+import UserController
+import updateDialog
 
 class Window(QtWidgets.QMainWindow):
 
@@ -50,6 +60,19 @@ class Window(QtWidgets.QMainWindow):
         #коннекторы для экшена
         self.ui.turnOnAction.triggered.connect(self.turnOnAdmin)
         self.ui.turnOffAction.triggered.connect(self.turnOffAdmin)
+        self.ui.enterAction.triggered.connect(self.Login)
+        self.ui.regiseterAction.triggered.connect(self.Register)
+        self.ui.deleteAction.triggered.connect(self.deleteUser)
+        self.ui.exitAction.triggered.connect(self.exitUser)
+        self.ui.action.triggered.connect(self.updateUser)
+
+        #фигня
+
+
+        #выключаем дизайн
+        self.ui.addButton.setVisible(False)
+        self.ui.editButton.setVisible(False)
+        self.ui.deleteButton.setVisible(False)
 
     def viewGame(self, selected, deselected):
 
@@ -144,6 +167,8 @@ class Window(QtWidgets.QMainWindow):
 
         self.table_id_relation.append([game_id, game.developer_id, game.publisher_id])
 
+        
+
     def updateGame(self):
         
         row = self.ui.shopTable.currentRow()
@@ -230,10 +255,24 @@ class Window(QtWidgets.QMainWindow):
         self.ui.widget.setVisible(False)
 
     def turnOnAdmin(self):
-        self.isAdmin = True
+        flag = True
+        self.isAdmin = flag
+
+        #выключаем дизайн
+        self.ui.addButton.setVisible(flag)
+        self.ui.editButton.setVisible(flag)
+        self.ui.deleteButton.setVisible(flag)
 
     def turnOffAdmin(self):
-        self.isAdmin = False               
+
+        flag = False
+        self.isAdmin = flag
+
+        #выключаем дизайн
+        self.ui.addButton.setVisible(flag)
+        self.ui.editButton.setVisible(flag)
+        self.ui.deleteButton.setVisible(flag)
+
 
     def addGame(self):
 
@@ -265,10 +304,192 @@ class Window(QtWidgets.QMainWindow):
 
         GameController.delete(id)
 
+    def Login(self):
+        
+        dialog = EnterDialog(self)
+        dialog.exec_()
+        self.user_id = dialog.user_id
+        print("user_id:")
+        print(self.user_id)
+        self.ui.libraryTable.setRowCount(0)
+
+        if (self.user_id != 0):
+            self.makeLibrary()
+
+    def Register(self):
+        dialog = RegisterDialog(self)
+        dialog.exec_()
+        self.user_id = dialog.user_id
+        print("user_id:")
+        print(self.user_id)
+        self.ui.libraryTable.setRowCount(0)
+    
+    def exitUser(self):
+        self.user_id = 0
+        self.ui.libraryTable.setRowCount(0)
+
+    def deleteUser(self):
+        
+        if (self.user_id == 0):
+            return
+        
+        
+        UserController.delete(self.user_id)
+
+        messageBox = QtWidgets.QMessageBox(self)
+        messageBox.setText('Пользователь удален')
+        messageBox.exec()
+
+        self.user_id = 0
+
+    def updateUser(self):
+        if (self.user_id == 0):
+            return
+
+        dialog = UpdateDialog(userId= self.user_id)
+
+        dialog.exec_()
+
+    def makeLibrary(self):
+
+        games, tags = functionalController.getLibrary(self.user_id)
+
+        for i in range(len(games)):
+            self.ui.libraryTable.insertRow(self.ui.libraryTable.rowCount())
+            index = self.ui.libraryTable.rowCount() - 1   
+            print('index {}'.format(index))
+            self.fillLibraryTableRow(games[i], tags[i], index)
+
+    def fillLibraryTableRow(self,game,tag,index):
+       
+        game_id = game.id
+        name = game.name
+        release_date = game.release_date
+        price = game.price
+        
+        publisher = self.ui.publisherBox.itemText(self.reverse_publisher_box[game.publisher_id])
+        developer = self.ui.developerBox.itemText(self.reverse_developer_box[game.developer_id])
+
+        print('{} {} {} {} {}'.format(name, release_date, price, publisher, developer))
+        
+        #заполнение таблицы
+        self.ui.libraryTable.setItem(index, 0, QtWidgets.QTableWidgetItem(name))
+        self.ui.libraryTable.setItem(index, 1, QtWidgets.QTableWidgetItem(str(release_date)))
+        self.ui.libraryTable.setItem(index, 2, QtWidgets.QTableWidgetItem(str(price)))
+        self.ui.libraryTable.setItem(index, 3, QtWidgets.QTableWidgetItem(developer))
+        self.ui.libraryTable.setItem(index, 4, QtWidgets.QTableWidgetItem(publisher))
+        self.ui.libraryTable.setItem(index, 5, QtWidgets.QTableWidgetItem(tag))
+
+class EnterDialog(QtWidgets.QDialog):
+    
+    user_id = 0
+
+    def __init__(self, parent = None):
+        super(EnterDialog, self).__init__(parent)
+        self.ui = enterDialog.Ui_Dialog()
+        self.ui.setupUi(self)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+        self.ui.pushButton.clicked.connect(self.login)
+  
+    def login(self):
+        
+        login = self.ui.loginEdit.text()
+        password = self.ui.passwordEdit.text()
+
+        user = UserController.getByLogin(login)
+
+        if (user == None or user.password != password):
+            print('error')
+            messageBox = QtWidgets.QMessageBox(self)
+            messageBox.setWindowTitle('Неправильный логин или пароль')
+            messageBox.setText('Неправильный логин или пароль. Попробуйте попытку снова')
+            messageBox.exec()
+
+        else:
+            self.user_id = user.id
+            self.close()
+
+
+class RegisterDialog(QtWidgets.QDialog):
+    
+    user_id = 0
+
+    def __init__(self, parent = None):
+        super(RegisterDialog, self).__init__(parent)
+        self.ui = registerDialog.Ui_Dialog()
+        self.ui.setupUi(self)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.ui.pushButton.clicked.connect(self.register)
+
+        
+
+    def register(self):
+        
+        login = self.ui.loginEdit.text()
+        password = self.ui.passwordEdit.text()
+        nickname = self.ui.nicknameEdit.text()
+
+        user = UserController.getByLogin(login)
+        
+        if (user != None):
+            print('error')
+            messageBox = QtWidgets.QMessageBox(self)
+            messageBox.setText('Пользователь уже существует')
+            messageBox.exec()
+        
+        else:
+            user = User(1,login,password, nickname)
+            user = UserController.add(user)
+            self.user_id = user.id
+            self.close()
+
+class UpdateDialog(QtWidgets.QDialog):
+    
+    user_id = 0
+
+    def __init__(self, parent = None,  userId = 1):
+        super(UpdateDialog, self).__init__(parent)
+        self.ui = registerDialog.Ui_Dialog()
+        self.ui.setupUi(self)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+        user = UserController.getById(userId)
+
+        self.ui.loginEdit.setText(user.login)
+        self.ui.passwordEdit.setText(user.password)
+        self.ui.nicknameEdit.setText(user.nickname)
+
+        UpdateDialog.user_id = userId
+        self.ui.pushButton.clicked.connect(self.update)
+
+    def update(self):
+        
+        id = UpdateDialog.user_id 
+        login = self.ui.loginEdit.text()
+        password = self.ui.passwordEdit.text()
+        nickname = self.ui.nicknameEdit.text()
+
+        user = UserController.getByLogin(login)
+        
+        if (user != None):
+            print('error')
+            messageBox = QtWidgets.QMessageBox(self)
+            messageBox.setText('Логин уже существует')
+            messageBox.exec()
+        
+        else:
+            user = User(id,login,password, nickname)
+            user = UserController.update(user)
+            self.user_id = user.id
+            self.close()
+
+
 
 app = QtWidgets.QApplication([])
 application = Window()
 application.setWindowIcon(QIcon("./image/icon.jpg"))
 application.show()
  
+
 sys.exit(app.exec())

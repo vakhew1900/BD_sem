@@ -530,7 +530,9 @@
     </property>
     <addaction name="regiseterAction"/>
     <addaction name="enterAction"/>
+    <addaction name="exitAction"/>
     <addaction name="deleteAction"/>
+    <addaction name="action"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -566,6 +568,16 @@
   <action name="turnOnAction">
    <property name="text">
     <string>Включено</string>
+   </property>
+  </action>
+  <action name="exitAction">
+   <property name="text">
+    <string>Выйти</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Изменить пользователя</string>
    </property>
   </action>
  </widget>

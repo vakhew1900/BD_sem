@@ -27,7 +27,7 @@ def add(newUser):
 
                 newId = cur.lastrowid
                 newUser.id = newId
-                return newId
+                return newUser
 
                 
 
